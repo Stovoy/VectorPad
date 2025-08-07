@@ -6,9 +6,5 @@
 [node name="TestScene" type="Node2D"]
 
 [node name="ManyVectors" type="Node" parent="."]
-script = ExtResource("1_sasra")
-vector_a = Vector2(17, 15)
 
 [node name="DynamicUpdates" type="Node" parent="."]
-script = ExtResource("2_coq8p")
-animated_vector = Vector2(-9, -30)
