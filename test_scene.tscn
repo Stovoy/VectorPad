@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://b50561cb34no5"]
+
+[ext_resource type="Script" uid="uid://606xjfhhlyvx" path="res://tests/test_many_vectors.gd" id="1_sasra"]
+[ext_resource type="Script" uid="uid://bnk3iijt17u72" path="res://tests/test_dynamic_updates.gd" id="2_coq8p"]
+
+[node name="TestScene" type="Node2D"]
+
+[node name="ManyVectors" type="Node" parent="."]
+script = ExtResource("1_sasra")
+vector_a = Vector2(17, 15)
+
+[node name="DynamicUpdates" type="Node" parent="."]
+script = ExtResource("2_coq8p")
+animated_vector = Vector2(-9, -30)
