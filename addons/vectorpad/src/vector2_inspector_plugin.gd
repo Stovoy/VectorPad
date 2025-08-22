@@ -26,10 +26,12 @@ class Vector2EditorProperty:
 	var target_object: Object
 	var target_property: String
 	var updating := false
+	var show_preview := true
 
 	var spin_box_x: SpinBox
 	var spin_box_y: SpinBox
 	var vector_drawer: Vector2Drawer
+	var toggle_preview_button: Button
 
 	func setup(object: Object, property_name: String):
 		target_object = object
@@ -52,12 +54,20 @@ class Vector2EditorProperty:
 		fields_container.add_child(row_two[0])
 		spin_box_y = row_two[1]
 
+		toggle_preview_button = Button.new()
+		fields_container.add_child(toggle_preview_button)
+		toggle_preview_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		toggle_preview_button.size_flags_vertical = Control.SIZE_SHRINK_END
+		toggle_preview_button.add_theme_font_size_override("font_size", 8)
+		toggle_preview_button.text = _get_preview_button_text()
+
 		vector_drawer = Vector2Drawer.new()
 		vector_drawer.custom_minimum_size = DEFAULT_VECTOR_DRAWER_MINIMUM_SIZE
 		root_container.add_child(vector_drawer)
 
 		spin_box_x.value_changed.connect(_on_spin_changed)
 		spin_box_y.value_changed.connect(_on_spin_changed)
+		toggle_preview_button.pressed.connect(_toggle_preview_visibility)
 		vector_drawer.property_changed.connect(_on_pad_changed)
 
 		var current_vector := Vector2.ZERO
@@ -121,6 +131,9 @@ class Vector2EditorProperty:
 		row_container.add_child(spin_box)
 		return [row_container, spin_box]
 
+	func _get_preview_button_text() -> String:
+		return "hide preview" if show_preview else "show preview"
+
 	func _on_spin_changed(new_value: float):
 		if updating:
 			return
@@ -139,6 +152,10 @@ class Vector2EditorProperty:
 		updating = false
 		emit_changed(target_property, new_value)
 
+	func _toggle_preview_visibility():
+		show_preview = not show_preview
+		toggle_preview_button.text = _get_preview_button_text()
+		vector_drawer.visible = show_preview
 
 class Vector2Drawer:
 	extends Control
