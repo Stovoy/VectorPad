@@ -29,6 +29,7 @@ class Vector2EditorProperty:
 
 	var spin_box_x: SpinBox
 	var spin_box_y: SpinBox
+	var spin_box_r: SpinBox
 	var vector_drawer: Vector2Drawer
 
 	func setup(object: Object, property_name: String):
@@ -51,6 +52,9 @@ class Vector2EditorProperty:
 		var row_two := _make_row("y")
 		fields_container.add_child(row_two[0])
 		spin_box_y = row_two[1]
+		var row_three := _make_row("r")
+		fields_container.add_child(row_three[0])
+		spin_box_r = row_three[1]
 
 		vector_drawer = Vector2Drawer.new()
 		vector_drawer.custom_minimum_size = DEFAULT_VECTOR_DRAWER_MINIMUM_SIZE
@@ -58,6 +62,7 @@ class Vector2EditorProperty:
 
 		spin_box_x.value_changed.connect(_on_spin_changed)
 		spin_box_y.value_changed.connect(_on_spin_changed)
+		spin_box_r.value_changed.connect(_on_radius_changed)
 		vector_drawer.property_changed.connect(_on_pad_changed)
 
 		var current_vector := Vector2.ZERO
@@ -66,6 +71,7 @@ class Vector2EditorProperty:
 		updating = true
 		spin_box_x.value = current_vector.x
 		spin_box_y.value = current_vector.y
+		spin_box_r.value = current_vector.length()
 		vector_drawer.value = current_vector
 		updating = false
 
@@ -80,6 +86,7 @@ class Vector2EditorProperty:
 		updating = true
 		spin_box_x.value = current_vector.x
 		spin_box_y.value = current_vector.y
+		spin_box_r.value = current_vector.length()
 		vector_drawer.value = current_vector
 		updating = false
 
@@ -95,6 +102,7 @@ class Vector2EditorProperty:
 			updating = true
 			spin_box_x.value = v.x
 			spin_box_y.value = v.y
+			spin_box_r.value = v.length()
 			vector_drawer.value = v
 			updating = false
 
@@ -126,6 +134,18 @@ class Vector2EditorProperty:
 			return
 		var new_vector := Vector2(spin_box_x.value, spin_box_y.value)
 		updating = true
+		spin_box_r.value = new_vector.length()
+		vector_drawer.value = new_vector
+		updating = false
+		emit_changed(target_property, new_vector)
+
+	func _on_radius_changed(new_value: float):
+		if updating:
+			return
+		var new_vector := Vector2(spin_box_x.value, spin_box_y.value).normalized() * spin_box_r.value
+		updating = true
+		spin_box_x.value = new_vector.x
+		spin_box_y.value = new_vector.y
 		vector_drawer.value = new_vector
 		updating = false
 		emit_changed(target_property, new_vector)
@@ -136,6 +156,7 @@ class Vector2EditorProperty:
 		updating = true
 		spin_box_x.value = new_value.x
 		spin_box_y.value = new_value.y
+		spin_box_r.value = new_value.length()
 		updating = false
 		emit_changed(target_property, new_value)
 
@@ -170,6 +191,8 @@ class Vector2Drawer:
 			var mouse_motion_event := event as InputEventMouseMotion
 			var canvas_center = size / 2
 			value = mouse_motion_event.position - canvas_center
+			if Input.is_key_label_pressed(KEY_CTRL):
+				value = value.normalized()
 			property_changed.emit(value)
 			return
 
